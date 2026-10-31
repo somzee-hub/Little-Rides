@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lr_demo_record_admin,lr.demo.record admin,model_lr_demo_record,base.group_system,1,1,1,1
+access_lr_demo_manager_admin,lr.demo.manager admin,model_lr_demo_manager,base.group_system,1,1,1,1

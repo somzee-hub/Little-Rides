@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_lr" model="ir.ui.view">
+        <field name="name">product.template.form.littlerides</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="lr_part_source"/>
+                <field name="lr_part_weight" invisible="lr_part_source != 'moulded'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_search_lr" model="ir.ui.view">
+        <field name="name">product.template.search.littlerides</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="lr_finished" string="Ride-Ons" domain="[('lr_part_source', '=', 'finished')]"/>
+                <filter name="lr_moulded" string="Moulded Parts" domain="[('lr_part_source', '=', 'moulded')]"/>
+                <filter name="lr_bought" string="Bought-out Parts" domain="[('lr_part_source', '=', 'bought')]"/>
+                <filter name="lr_granule" string="Granules" domain="[('lr_part_source', '=', 'granule')]"/>
+                <group>
+                    <filter name="groupby_lr_part_source" string="Part Source" context="{'group_by': 'lr_part_source'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Stock to Sell: what sales can promise from offline and online stock -->
+    <record id="view_product_lr_stock_to_sell" model="ir.ui.view">
+        <field name="name">product.product.list.lr.stock.to.sell</field>
+        <field name="model">product.product</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Stock to Sell" create="0" edit="0"
+                  decoration-danger="lr_atp_offline &lt;= 0" decoration-success="lr_atp_offline &gt; 0">
+                <field name="default_code" string="Code"/>
+                <field name="name"/>
+                <field name="product_template_variant_value_ids" widget="many2many_tags" string="Option"/>
+                <field name="lr_atp_offline"/>
+                <field name="lr_atp_online"/>
+                <field name="lr_incoming_total"/>
+                <field name="lr_next_incoming_date"/>
+                <field name="lst_price" string="MRP" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_lr_stock_to_sell" model="ir.actions.act_window">
+        <field name="name">Stock to Sell</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_product_lr_stock_to_sell"/>
+        <field name="domain">[('sale_ok', '=', True), ('is_storable', '=', True)]</field>
+        <field name="context">{'search_default_lr_ride_ons': 1}</field>
+        <field name="help" type="html"><p>Free to sell = on hand minus everything already promised on confirmed orders.</p></field>
+    </record>
+
+    <!-- Build Capacity -->
+    <record id="view_product_lr_build_capacity" model="ir.ui.view">
+        <field name="name">product.product.list.lr.build</field>
+        <field name="model">product.product</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Build Capacity" create="0" edit="0" decoration-danger="lr_build_bought == 0">
+                <field name="default_code" string="Code"/>
+                <field name="name"/>
+                <field name="product_template_variant_value_ids" widget="many2many_tags" string="Option"/>
+                <field name="qty_available" string="Built Stock"/>
+                <field name="lr_build_now"/>
+                <field name="lr_build_bought"/>
+                <field name="lr_bottleneck_id"/>
+                <field name="lr_build_incoming"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_lr_build_capacity" model="ir.actions.act_window">
+        <field name="name">Build Capacity</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_product_lr_build_capacity"/>
+        <field name="domain">[('lr_part_source', '=', 'finished')]</field>
+        <field name="help" type="html"><p>How many units of each model the parts in stock allow, and which part runs out first.</p></field>
+    </record>
+
+    <!-- Component Cover -->
+    <record id="view_product_lr_component_cover" model="ir.ui.view">
+        <field name="name">product.product.list.lr.cover</field>
+        <field name="model">product.product</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Component Cover" create="0" edit="0" decoration-danger="lr_order_now">
+                <field name="default_code" string="Code"/>
+                <field name="name"/>
+                <field name="qty_available" string="On Hand"/>
+                <field name="outgoing_qty" string="Committed"/>
+                <field name="incoming_qty" string="On Order"/>
+                <field name="lr_next_incoming_date"/>
+                <field name="lr_daily_usage"/>
+                <field name="lr_days_cover"/>
+                <field name="lr_lead_days"/>
+                <field name="lr_order_now" widget="boolean"/>
+                <field name="lr_suggested_qty"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_product_lr_search" model="ir.ui.view">
+        <field name="name">product.product.search.lr</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="lr_ride_ons" string="Ride-Ons" domain="[('lr_part_source', '=', 'finished')]"/>
+                <filter name="lr_spares" string="Spares" domain="[('lr_part_source', 'in', ('moulded', 'bought'))]"/>
+                <filter name="lr_order_now_filter" string="Order Now" domain="[('lr_order_now', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_lr_component_cover" model="ir.actions.act_window">
+        <field name="name">Component Cover</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_product_lr_component_cover"/>
+        <field name="domain">[('lr_part_source', '=', 'bought')]</field>
+        <field name="help" type="html"><p>Bought-out parts against supplier lead time. Red rows must be ordered now.</p></field>
+    </record>
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_lr_root" name="Little Rides" sequence="5"
+              web_icon="littlerides_erp,static/description/icon.png"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_lr_stock_to_sell" name="Stock to Sell" parent="menu_lr_root" sequence="10"
+              action="action_lr_stock_to_sell"/>
+    <menuitem id="menu_lr_build" name="Build Capacity" parent="menu_lr_root" sequence="20"
+              action="action_lr_build_capacity" groups="mrp.group_mrp_user,sales_team.group_sale_manager"/>
+    <menuitem id="menu_lr_cover" name="Component Cover" parent="menu_lr_root" sequence="30"
+              action="action_lr_component_cover" groups="purchase.group_purchase_user,mrp.group_mrp_user"/>
+
+    <menuitem id="menu_lr_approvals" name="Approvals" parent="menu_lr_root" sequence="40"/>
+    <menuitem id="menu_lr_counts" name="Stock Counts" parent="menu_lr_approvals" sequence="10"
+              action="action_lr_counts_to_approve" groups="stock.group_stock_user"/>
+    <menuitem id="menu_lr_scraps" name="Rejects and Scrap" parent="menu_lr_approvals" sequence="20"
+              action="action_lr_scraps_to_approve" groups="stock.group_stock_user"/>
+    <menuitem id="menu_lr_vouchers" name="Journal Vouchers" parent="menu_lr_approvals" sequence="30"
+              action="action_lr_vouchers_to_post" groups="account.group_account_invoice"/>
+
+    <menuitem id="menu_lr_config" name="Configuration" parent="menu_lr_root" sequence="90"
+              groups="base.group_system"/>
+    <menuitem id="menu_lr_demo" name="Demo Data" parent="menu_lr_config" sequence="10"
+              action="action_lr_demo_open"/>
+</odoo>
